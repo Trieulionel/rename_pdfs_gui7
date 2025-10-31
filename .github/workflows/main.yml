@@ -1,4 +1,4 @@
-name: Build Python App
+name: Build Python 3.8.7 32-bit App
 
 on:
   push:
@@ -8,28 +8,29 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest   # runner hiện đại, nhưng build 32-bit
 
     steps:
-      # 1️⃣ Checkout source code
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Cài đặt Python
-      - name: Set up Python 3.8
+      # 2️⃣ Set up Python 3.8.7 32-bit
+      - name: Set up Python 3.8.7 (x86)
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.8.7
+          architecture: x86
 
-      # 3️⃣ Nâng cấp pip
+      # 3️⃣ Upgrade pip
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
-      # 4️⃣ Cài PyInstaller
+      # 4️⃣ Install PyInstaller
       - name: Install PyInstaller
         run: python -m pip install pyinstaller
 
-      # 5️⃣ Cài các dependency nếu requirements.txt tồn tại
+      # 5️⃣ Install dependencies if requirements.txt exists
       - name: Install dependencies
         run: |
           if (Test-Path "requirements.txt") {
@@ -38,7 +39,7 @@ jobs:
             Write-Host "No requirements.txt found, skipping..."
           }
 
-      # 6️⃣ Build ứng dụng bằng PyInstaller (ví dụ main.py)
+      # 6️⃣ Build executable
       - name: Build executable
         run: pyinstaller --onefile rename_pdfs_gui7.py
 
