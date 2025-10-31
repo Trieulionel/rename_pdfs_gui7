@@ -1,0 +1,43 @@
+name: Build Windows 32-bit EXE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 1. Checkout repo
+      - uses: actions/checkout@v3
+
+      # 2. Cài Python 3.8 32-bit
+      - name: Set up Python 3.8 32-bit
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          architecture: x86
+
+      # 3. Cài dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      # 4. Build EXE với PyInstaller
+      - name: Build EXE
+        run: |
+          if exist dist\ rename_pdfs_gui7.exe rmdir /s /q dist
+          if exist build rmdir /s /q build
+          pyinstaller --onefile --windowed rename_pdfs_gui7.py --icon=icon.ico
+
+      # 5. Upload EXE như artifact
+      - name: Upload EXE Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: rename_pdfs_gui7-exe
+          path: dist/rename_pdfs_gui7.exe
